@@ -32,30 +32,41 @@ onBeforeMount(() => {
 
 <template>
   <el-container class="justify-center p-10 flex !flex-col items-center">
-    <el-form @submit.prevent="searchHandler">
-      <el-form-item>
-        <el-input
-          v-model="searchValue"
-          placeholder="Movie search"
-          class="min-w-64"
-          :value="searchValue"
-        >
-          <template #prefix>
-            <el-button
-              native-type="submit"
-              :icon="Search"
-              text
-              class="!-ml-2.5 !mr-0"
-            />
-          </template>
-          <template #suffix>
-            <el-icon class="is-loading" v-if="moviesStore.isLoading">
-              <el-icon-loading />
-            </el-icon>
-          </template>
-        </el-input>
-      </el-form-item>
-    </el-form>
+    <div class="flex gap-2">
+      <el-form @submit.prevent="searchHandler">
+        <el-form-item>
+          <el-input
+              v-model="searchValue"
+              placeholder="Movie search"
+              class="min-w-64"
+              :value="searchValue"
+          >
+            <template #prefix>
+              <el-button
+                  native-type="submit"
+                  :icon="Search"
+                  text
+                  class="!-ml-2.5 !mr-0"
+              />
+            </template>
+            <template #suffix>
+              <el-icon class="is-loading" v-if="moviesStore.isLoading">
+                <el-icon-loading />
+              </el-icon>
+            </template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+
+      <nuxt-link
+          :to="{ path: 'add-movie' }"
+      >
+        <el-button type="primary">
+          Add movie
+        </el-button>
+      </nuxt-link>
+    </div>
+
     <NuxtPage />
   </el-container>
 </template>
