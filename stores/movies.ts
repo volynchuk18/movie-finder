@@ -67,7 +67,7 @@ export const useMoviesStore = defineStore("movies", {
               })),
             );
 
-            if (this.movies.length < +res.totalResults) {
+            if (this.movies.length < Number(res.totalResults)) {
               this.movies?.push({
                 ...emptyMovie,
                 localId: guidGenerator(),
@@ -85,7 +85,6 @@ export const useMoviesStore = defineStore("movies", {
     },
 
     fetchMovieInfo(title: string) {
-      console.log(title);
       this.isLoading = true;
       return $fetch<MovieModel>(`${mbdbapi}?t=${title}&apikey=${omdbapiKey}`)
         .then((res) => {

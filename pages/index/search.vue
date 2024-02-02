@@ -16,7 +16,8 @@ const onSlideChange = async (newIndex: number, oldIndex: number) => {
 
   if (
     newIndex === moviesStore.movies.length - 2 &&
-    moviesStore.movies.length - 2 < moviesStore.totalResults
+    moviesStore.movies.filter((mov) => mov.Title).length <
+      moviesStore.totalResults
   ) {
     await moviesStore.fetchMovies(
       route.query.q?.toString(),
