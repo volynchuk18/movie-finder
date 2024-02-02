@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useMoviesStore, fetchMovieInfo, emptyMovie } from "~/stores/movies";
-import type { MovieModel } from "~/models/movies";
 
 const route = useRoute();
 
@@ -8,7 +7,7 @@ const moviesStore = useMoviesStore();
 
 const queryTitle = route.query.q?.toString() || "";
 
-const movieDetails: MovieModel = ref(
+const movieDetails = ref(
   moviesStore.movies.find((movie) => movie.Title === queryTitle) || emptyMovie,
 );
 
@@ -16,9 +15,11 @@ let error = "";
 
 onBeforeMount(async () => {
   if (queryTitle && !movieDetails.value.Title) {
-    movieDetails.value = await fetchMovieInfo(queryTitle);
-    if (movieDetails.value.Error) {
-      error = movieDetails.value.Error;
+    const res = await fetchMovieInfo(queryTitle);
+    if ('Error' in res) {
+      error = res.Error;
+    } else {
+      movieDetails.value = res;
     }
   }
 });

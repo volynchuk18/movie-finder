@@ -20,10 +20,12 @@ const onSlideChange = async (newIndex: number, oldIndex: number) => {
       moviesStore.totalResults
   ) {
     await moviesStore.fetchMovies(
-      route.query.q?.toString(),
+      route.query.q?.toString() || "",
       Math.ceil(newIndex / 10) + 1,
     );
-    carousel.value.setActiveItem(slideLastIndex);
+    if (carousel.value) {
+      carousel.value.setActiveItem(slideLastIndex);
+    }
   }
 };
 

@@ -12,7 +12,7 @@ const omdbapiKey = "e900c2cc";
 const mbdbapi = "https://www.omdbapi.com/";
 
 export const fetchMovieInfo = async (title: string) => {
-  return $fetch<MovieModel & { Error: string }>(
+  return $fetch<MovieModel | { Error: string }>(
     `${mbdbapi}?t=${title}&apikey=${omdbapiKey}`,
   )
     .then((res) => {
@@ -60,7 +60,7 @@ export const useMoviesStore = defineStore("movies", {
             );
 
             this.movies.pop();
-            this.movies.push(...detailedMoviesInfo);
+            this.movies.push(...detailedMoviesInfo as MovieModel[]);
 
             if (this.movies.length < Number(res.totalResults)) {
               this.movies?.push(emptyMovie);

@@ -6,7 +6,7 @@ interface CreateNewMovieModel {
   data: string;
 }
 
-const newMovieData: CreateNewMovieModel[] = ref([
+const newMovieData = ref([
   {
     name: "Title",
     required: true,
@@ -27,7 +27,7 @@ const newMovieData: CreateNewMovieModel[] = ref([
 ]);
 
 const createNewMovie = () => {
-  const parsedMovieData = {};
+  const parsedMovieData: Record<string, unknown> = {};
   newMovieData.value.forEach((info) => {
     parsedMovieData[info.name] = info.data;
   });
