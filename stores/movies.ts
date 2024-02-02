@@ -5,39 +5,31 @@ interface RootState {
   movies: MovieModel[];
   totalResults: number;
   isLoading: boolean;
-  movieDetails: MovieModel;
+  error: string;
 }
 
-const omdbapiKey = "6daee4cc";
+const omdbapiKey = "e900c2cc";
 const mbdbapi = "https://www.omdbapi.com/";
 
-const guidGenerator = () => {
-  const S4 = () => {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  };
-  return (
-    S4() +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    S4() +
-    S4()
-  );
+export const fetchMovieInfo = async (title: string) => {
+  return $fetch<MovieModel & { Error: string }>(
+    `${mbdbapi}?t=${title}&apikey=${omdbapiKey}`,
+  )
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return emptyMovie;
+    });
 };
 
-const emptyMovie: MovieModel = {
+export const emptyMovie: MovieModel = {
   Poster: "",
   Title: "",
   Type: "",
   Year: "",
   imdbID: "",
-  localId: guidGenerator(),
 };
 
 export const useMoviesStore = defineStore("movies", {
@@ -45,35 +37,36 @@ export const useMoviesStore = defineStore("movies", {
     ({
       movies: [emptyMovie],
       isLoading: false,
-      movieDetails: emptyMovie,
+      error: "",
     }) as RootState,
   actions: {
     fetchMovies(query: string, page = 1) {
       this.isLoading = true;
+      this.error = "";
       return $fetch<{
-        Search: Omit<MovieModel, "localId">[] | undefined;
+        Search: MovieModel[] | undefined;
         totalResults: string;
-      }>(`${mbdbapi}?s=${query}&page=${page}&apikey=${omdbapiKey}`)
-        .then((res) => {
+      }>(`${mbdbapi}?apikey=${omdbapiKey}&s=${query}&page=${page}`)
+        .then(async (res) => {
           if (page === 1) {
             this.movies = [emptyMovie];
           }
+
           if (res.Search) {
-            this.movies.pop();
-            this.movies.push(
-              ...res.Search.map((item) => ({
-                ...item,
-                localId: guidGenerator(),
-              })),
+            const detailedMoviesInfo = await Promise.all(
+              res.Search.map((item) => fetchMovieInfo(item.Title)).filter(
+                (item) => item,
+              ),
             );
 
+            this.movies.pop();
+            this.movies.push(...detailedMoviesInfo);
+
             if (this.movies.length < Number(res.totalResults)) {
-              this.movies?.push({
-                ...emptyMovie,
-                localId: guidGenerator(),
-              });
+              this.movies?.push(emptyMovie);
             }
           }
+
           this.totalResults = Number(res.totalResults) || 0;
         })
         .catch((err) => {
@@ -81,16 +74,6 @@ export const useMoviesStore = defineStore("movies", {
           this.movies = [];
           console.error(err);
         })
-        .finally(() => (this.isLoading = false));
-    },
-
-    fetchMovieInfo(title: string) {
-      this.isLoading = true;
-      return $fetch<MovieModel>(`${mbdbapi}?t=${title}&apikey=${omdbapiKey}`)
-        .then((res) => {
-          this.movieDetails = res;
-        })
-        .catch(console.error)
         .finally(() => (this.isLoading = false));
     },
   },

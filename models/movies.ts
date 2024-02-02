@@ -4,6 +4,5 @@ export interface MovieModel {
   Type: string;
   Year: string;
   imdbID: string;
-  localId: string;
   Director?: string;
 }

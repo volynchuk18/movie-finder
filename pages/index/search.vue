@@ -15,7 +15,7 @@ const onSlideChange = async (newIndex: number, oldIndex: number) => {
   }
 
   if (
-    newIndex === moviesStore.movies.length - 2 &&
+    newIndex === moviesStore.movies.length - 3 &&
     moviesStore.movies.filter((mov) => mov.Title).length <
       moviesStore.totalResults
   ) {
@@ -52,35 +52,10 @@ const carouselItemDetailsClickHandler = async (movie: MovieModel) => {
   >
     <el-carousel-item
       v-if="moviesStore.movies.length"
-      v-for="movie in moviesStore.movies"
-      :key="movie.localId"
+      v-for="(movie, index) in moviesStore.movies"
+      :key="index"
     >
-      <el-card :body-style="{ padding: '0px' }">
-        <el-image :src="movie.Poster" fit="fill">
-          <template #error>
-            <el-skeleton class="!h-full" :animated="!movie.Title">
-              <template #template>
-                <el-skeleton-item
-                  variant="image"
-                  class="!h-full"
-                  style="height: 300px !important"
-                />
-              </template>
-            </el-skeleton>
-          </template>
-        </el-image>
-        <div v-if="movie.Title" class="px-2 py-1">
-          <h2 class="font-bold">{{ movie.Title }}</h2>
-          <div>Year: {{ movie.Year }}</div>
-        </div>
-        <el-skeleton v-else :rows="2" class="p-2" :animated="!movie.Title" />
-
-        <nuxt-link :to="{ path: 'details', query: { q: movie.Title } }">
-          <el-button v-if="movie.Title" type="primary" class="w-full">
-            Details
-          </el-button>
-        </nuxt-link>
-      </el-card>
+      <movie-card :movie="movie" :error="moviesStore.error" />
     </el-carousel-item>
   </el-carousel>
 </template>
@@ -89,9 +64,5 @@ const carouselItemDetailsClickHandler = async (movie: MovieModel) => {
 <style scoped>
 .search-carousel {
   width: min(600px, 90vw);
-}
-.el-image {
-  display: block;
-  min-height: 300px;
 }
 </style>
