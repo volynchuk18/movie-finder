@@ -41,16 +41,19 @@ export const useMoviesStore = defineStore("movies", {
     fetchMovies(query: string, page = 1) {
       this.isLoading = true;
       this.error = "";
-      return $fetch<{
-        Search: MovieModel[] | undefined;
-        totalResults: string;
-      }>(`${mbdbapi}?apikey=${omdbapiKey}&s=${query}&page=${page}`)
+      return $fetch<
+        | {
+            Search: MovieModel[] | undefined;
+            totalResults: string;
+          }
+        | { Error: string }
+      >(`${mbdbapi}?apikey=${omdbapiKey}&s=${query}&page=${page}`)
         .then(async (res) => {
           if (page === 1) {
             this.movies = [emptyMovie];
           }
 
-          if (res.Search) {
+          if ("Search" in res && res.Search) {
             const detailedMoviesInfo = await Promise.all(
               res.Search.map((item) => fetchMovieInfo(item.Title)).filter(
                 (item) => item,
@@ -58,14 +61,16 @@ export const useMoviesStore = defineStore("movies", {
             );
 
             this.movies.pop();
-            this.movies.push(...detailedMoviesInfo as MovieModel[]);
+            this.movies.push(...(detailedMoviesInfo as MovieModel[]));
 
             if (this.movies.length < Number(res.totalResults)) {
               this.movies?.push(emptyMovie);
             }
-          }
 
-          this.totalResults = Number(res.totalResults) || 0;
+            this.totalResults = Number(res.totalResults) || 0;
+          } else if ("Error" in res) {
+            this.error = res.Error;
+          }
         })
         .catch((err) => {
           this.totalResults = 0;
