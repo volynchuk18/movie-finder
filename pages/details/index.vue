@@ -11,13 +11,13 @@ const movieDetails = ref(
   moviesStore.movies.find((movie) => movie.Title === queryTitle) || emptyMovie,
 );
 
-let error = "";
+const error = ref("");
 
 onBeforeMount(async () => {
   if (queryTitle && !movieDetails.value.Title) {
     const res = await fetchMovieInfo(queryTitle);
     if ('Error' in res) {
-      error = res.Error;
+      error.value = res.Error;
     } else {
       movieDetails.value = res;
     }

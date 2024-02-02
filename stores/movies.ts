@@ -15,9 +15,7 @@ export const fetchMovieInfo = async (title: string) => {
   return $fetch<MovieModel | { Error: string }>(
     `${mbdbapi}?t=${title}&apikey=${omdbapiKey}`,
   )
-    .then((res) => {
-      return res;
-    })
+    .then((res) => res)
     .catch((err) => {
       console.error(err);
       return emptyMovie;

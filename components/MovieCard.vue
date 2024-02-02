@@ -34,7 +34,7 @@ defineProps({
       </template>
     </el-image>
 
-    <div v-if="movie.Title" class="px-2 py-1">
+    <div v-if="movie.Title && !error" class="px-2 py-1">
       <h2 class="font-bold">{{ movie.Title }}</h2>
       <div>Year: {{ movie.Year }}</div>
       <div>Director: {{ movie.Director }}</div>
